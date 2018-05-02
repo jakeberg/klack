@@ -3,15 +3,18 @@ const messagesDiv = document.getElementById("messageslist");
 const textarea = document.getElementById("newmessage");
 const ding = new Audio('typewriter_ding.m4a');
 
+
 let messages = [{timestamp: 0}];
 
 let name = window.prompt("Enter your name");
 if(name.length===0) name = "Anon-" + Math.floor(Math.random()*1000);
 
 function appendMessage(msg) {
+    let pubDate = new Date(msg.timestamp);
+
     messages.push(msg);
     messagesDiv.innerHTML +=
-      `<div class="message"><strong>${msg.sender}</strong><br>${msg.message}</div>`;
+      `<div class="message"><strong>${msg.sender}</strong><br>${msg.message}<br><p>${pubDate}<p></div>`;
 }
 
 function listUsers(users) {
@@ -32,6 +35,7 @@ function fetchMessages() {
     fetch("/messages?for=" + encodeURIComponent(name))
         .then(response => response.json())
         .then(data => {
+            console.log('Db data:', data);
             const shouldScroll = scrolledToBottom();
             var shouldDing = false;
             listUsers(data.users);

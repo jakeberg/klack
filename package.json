@@ -1,0 +1,24 @@
+{
+  "name": "klack",
+  "version": "1.0.0",
+  "description": "A basic messaging service written with NodeJS+Express, with a web client using the Fetch API.",
+  "main": "app.js",
+  "dependencies": {
+    "express": "^4.16.3",
+    "mongoose": "^5.0.17"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jakeberg/klack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jakeberg/klack/issues"
+  },
+  "homepage": "https://github.com/jakeberg/klack#readme"
+}
