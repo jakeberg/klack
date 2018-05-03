@@ -1,8 +1,11 @@
-const express = require('express')
-const mongoose = require('mongoose')
+const express = require('express');
+const mongoose = require('mongoose');
 const querystring = require('querystring');
-const port = 3000
-const app = express()
+const port = 3000;
+const app = express();
+
+app.use(express.static("./public"));
+app.use(express.json());
 
 const messageSchema = mongoose.Schema({
     sender: String,
@@ -14,22 +17,17 @@ const Message = mongoose.model('Message', messageSchema)
 
 let messages = [];
 // Track last active times for each sender
-let users = {}
+let users = {};
+let lastActive = {};
 
-app.use(express.static("./public"))
-app.use(express.json())
 
-Message.find({}, 'sender message timestamp', function (err, messageList) {
+Message.find({}, function (err, messageList) {
     if (err) return handleError(err)
 
-    // console.log('Message List', messageList)
-  
-    for(let i in messageList) {
-        // console.log('Should be an object:', messageList[i]);
+    for (let i in messageList) {
         messages.push(messageList[i])
-        // users.push(messageList[i].sender)
     }
-})
+});
 
 function userSortFn(a, b) {
     var nameA = a.name.toUpperCase(); // ignore upper and lowercase
@@ -43,7 +41,7 @@ function userSortFn(a, b) {
 
     // names must be equal
     return 0;
-}
+};
 
 app.get("/messages", (request, response) => {
     const now = Date.now();
@@ -55,19 +53,30 @@ app.get("/messages", (request, response) => {
     usersSimple.sort(userSortFn);
     usersSimple.filter((a) => (a.name !== request.query.for))
     users[request.query.for] = now;
-    console.log(users)
+    console.log(usersSimple)
+
+    Message.find({}, function (err, messageList) {
+        if (err) return handleError(err)
+
+        for (let i in messageList) {
+            let lastTime = messageList[i].timestamp
+            let name = messageList[i].sender
+            lastActive[name] = lastTime;
+        }
+    });
+
     response.send({
         messages: messages.slice(-40),
-        users: usersSimple
+        users: usersSimple,
+        active: lastActive
     })
-
-})
+});
 
 app.post("/messages", (request, response) => {
     let incomingMessage = request.body.message
     let sender = request.body.sender
     let timestamp = Date.now()
-    
+
     let newMessage = new Message({
         message: incomingMessage,
         sender: sender,
@@ -84,6 +93,6 @@ app.post("/messages", (request, response) => {
     users[request.body.sender] = timestamp
     response.status(201)
     response.send(request.body)
-})
+});
 
-app.listen(3000, () => mongoose.connect('mongodb://localhost/klack'))
+app.listen(3000, () => mongoose.connect('mongodb://localhost/klack'));

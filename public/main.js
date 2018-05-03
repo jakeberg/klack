@@ -18,6 +18,7 @@ function appendMessage(msg) {
 }
 
 function listUsers(users) {
+  
     let userStrings = users.map((user) =>
         (user.active ? `<span class="active"><span class="cyan">&#9679;</span> ${user.name}</span>` : `<span class="inactive">&#9675; ${user.name}</span>`)
     );
@@ -35,9 +36,10 @@ function fetchMessages() {
     fetch("/messages?for=" + encodeURIComponent(name))
         .then(response => response.json())
         .then(data => {
-            console.log('Db data:', data);
             const shouldScroll = scrolledToBottom();
             var shouldDing = false;
+          
+
             listUsers(data.users);
             for(let i = 0; i < data.messages.length; i++){ 
                 let msg = data.messages[i];
