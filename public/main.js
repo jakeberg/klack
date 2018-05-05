@@ -14,7 +14,7 @@ function appendMessage(msg) {
 
     messages.push(msg);
     messagesDiv.innerHTML +=
-      `<div class="message"><strong>${msg.sender}</strong><br>${msg.message}<br><p>${pubDate}<p></div>`;
+      `<div class="message"><strong>${msg.sender}</strong><br>${msg.message}<br><p>Sent at: ${pubDate}<p></div>`;
 }
 
 function listUsers(users) {
@@ -38,9 +38,8 @@ function fetchMessages() {
         .then(data => {
             const shouldScroll = scrolledToBottom();
             var shouldDing = false;
-          
-
-            listUsers(data.users);
+            //Running the list of users based on the timestamp from the database
+            listUsers(data.active);
             for(let i = 0; i < data.messages.length; i++){ 
                 let msg = data.messages[i];
                 if(msg.timestamp > messages[messages.length-1].timestamp) {

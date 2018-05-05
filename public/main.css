@@ -6,7 +6,7 @@ body {font-family: sans-serif; height: 100%; display: flex; margin: 0;}
 .cyan {color: cyan;}
 #mainpane {width: 100%; position: relative;}
 h1 {background: url('klack.png') no-repeat; background-size: contain; padding-left: 60px; color: white; font-family: 'Open Sans'; font-size: 40px;}
-p {font-size: 75%}
+p {font-size: 50%}
 #messageslist {height: calc(100% - 103px); overflow-y: scroll; overflow-x: wrap;}
 #messageheader {font-size: 20px; padding: 20px;}
 .message {padding: 5px 20px;}

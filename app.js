@@ -20,7 +20,6 @@ let messages = [];
 let users = {};
 let lastActive = {};
 
-
 Message.find({}, function (err, messageList) {
     if (err) return handleError(err)
 
@@ -46,37 +45,46 @@ function userSortFn(a, b) {
 app.get("/messages", (request, response) => {
     const now = Date.now();
     const requireActiveSince = now - (15 * 1000) // consider inactive after 15 seconds
-    usersSimple = Object.keys(users).map((x) => ({
-        name: x,
-        active: (users[x] > requireActiveSince)
-    }))
-    usersSimple.sort(userSortFn);
-    usersSimple.filter((a) => (a.name !== request.query.for))
-    users[request.query.for] = now;
-    console.log(usersSimple)
+
+    //Old code for user activity:
+
+    // usersSimple = Object.keys(users).map((x) => ({
+    //     name: x,
+    //     active: (users[x] > requireActiveSince)
+    // }))
+    // usersSimple.sort(userSortFn);
+    // usersSimple.filter((a) => (a.name !== request.query.for))
+    // users[request.query.for] = now;
+
 
     Message.find({}, function (err, messageList) {
         if (err) return handleError(err)
-
+        let lastTime
         for (let i in messageList) {
             let lastTime = messageList[i].timestamp
-            let name = messageList[i].sender
-            lastActive[name] = lastTime;
+            let sender = messageList[i].sender
+            if(lastActive[i] == undefined){
+                lastActive[sender] = lastTime
+            }
         }
+        usersNew = Object.keys(lastActive).map((x) => ({
+            name: x,
+            active: (lastActive[x] > requireActiveSince)
+        }))
+        usersNew.sort(userSortFn);
+        console.log("usersNew:", usersNew)
+        response.send({
+            messages: messages.slice(-40),
+            // users: usersSimple,
+            active: usersNew
+        })
     });
-
-    response.send({
-        messages: messages.slice(-40),
-        users: usersSimple,
-        active: lastActive
-    })
 });
 
 app.post("/messages", (request, response) => {
     let incomingMessage = request.body.message
     let sender = request.body.sender
     let timestamp = Date.now()
-
     let newMessage = new Message({
         message: incomingMessage,
         sender: sender,
